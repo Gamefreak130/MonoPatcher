@@ -51,6 +51,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ForceRecompilation.cs" />
+    <Compile Include="ILPatch.cs" />
     <Compile Include="Internal\Hooking.cs" />
     <Compile Include="ReplaceMethodAttribute.cs" />
     <Compile Include="ReplacePropertyAttribute.cs" />

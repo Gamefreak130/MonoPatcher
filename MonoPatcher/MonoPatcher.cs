@@ -96,6 +96,10 @@ namespace MonoPatcherLib
                         (propPatch as ReplacePropertyAttribute).Apply(prop);
                     }
                 }
+                if (typeof(ILPatch).IsAssignableFrom(type))
+                {
+                    (Activator.CreateInstance(type) as ILPatch).Replace();
+                }
             }
             AlreadyPatchedAssemblies.Add(assembly);
         }

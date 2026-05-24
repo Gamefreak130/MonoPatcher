@@ -109,25 +109,22 @@ namespace MonoPatcherLib
         /// </summary>
         public static void ReplaceMethod(MethodInfo originalMethod, MethodInfo replacementMethod)
         {
-            unsafe
+            var originalMethodHandle = originalMethod.MethodHandle.Value;
+            var replacementMethodHandle = replacementMethod.MethodHandle.Value;
+            var replacementByteArray = new byte[40];
+            Marshal.Copy(replacementMethodHandle, replacementByteArray, 0, 40);
+
+            // Don't replace name for metadata/reflection/etc reasons.
+            Marshal.Copy(replacementByteArray, 0, originalMethodHandle, 24);
+            Marshal.Copy(replacementByteArray, 28, new IntPtr(originalMethodHandle.ToInt32() + 28), 12);
+
+            Log($"Replaced {originalMethod.Name} ({originalMethodHandle.ToInt32().ToString("X")}) with {replacementMethod.Name} ({replacementMethodHandle.ToInt32().ToString("X")})");
+            ReplacementCount++;
+
+            if (Hooking.WeavedMethods.TryGetValue(originalMethodHandle, out var weavedMethod))
             {
-                var originalMethodHandle = originalMethod.MethodHandle.Value;
-                var replacementMethodHandle = replacementMethod.MethodHandle.Value;
-                var replacementByteArray = new byte[40];
-                Marshal.Copy(replacementMethodHandle, replacementByteArray, 0, 40);
-
-                // Don't replace name for metadata/reflection/etc reasons.
-                Marshal.Copy(replacementByteArray, 0, originalMethodHandle, 24);
-                Marshal.Copy(replacementByteArray, 28, new IntPtr(originalMethodHandle.ToInt32() + 28), 12);
-
-                Log($"Replaced {originalMethod.Name} ({originalMethodHandle.ToInt32().ToString("X")}) with {replacementMethod.Name} ({replacementMethodHandle.ToInt32().ToString("X")})");
-                ReplacementCount++;
-
-                if (Hooking.WeavedMethods.TryGetValue(originalMethodHandle, out var weavedMethod))
-                {
-                    weavedMethod.Dispose();
-                    Hooking.WeavedMethods.Remove(originalMethodHandle);
-                }
+                weavedMethod.Dispose();
+                Hooking.WeavedMethods.Remove(originalMethodHandle);
             }
         }
 

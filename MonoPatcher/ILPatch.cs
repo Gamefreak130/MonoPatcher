@@ -39,7 +39,7 @@ namespace MonoPatcherLib
         /// <remarks>
         /// If <c>TargetFragment.Length</c> is not equal to <c>ReplacementFragment.Length</c>, this method will have no effect.
         /// </remarks>
-        public void Replace()
+        public void Apply()
         {
             // Cache properties in local variables, to avoid duplication if implementations are computed and not field-backed
             var targetMethod = TargetMethod;

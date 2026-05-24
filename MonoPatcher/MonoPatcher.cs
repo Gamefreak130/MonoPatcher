@@ -99,7 +99,7 @@ namespace MonoPatcherLib
                 }
                 if (canIlWeave && typeof(ILPatch).IsAssignableFrom(type))
                 {
-                    (Activator.CreateInstance(type) as ILPatch).Replace();
+                    (Activator.CreateInstance(type) as ILPatch).Apply();
                 }
             }
             AlreadyPatchedAssemblies.Add(assembly);

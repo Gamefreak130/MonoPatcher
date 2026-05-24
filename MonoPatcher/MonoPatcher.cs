@@ -70,6 +70,7 @@ namespace MonoPatcherLib
         public static void PatchAll(Assembly assembly)
         {
             if (AlreadyPatchedAssemblies.Contains(assembly)) return;
+            var canIlWeave = InitializationType == InitializationTypes.CPP;
             var types = assembly.GetTypes();
             foreach(var type in types)
             {
@@ -96,7 +97,7 @@ namespace MonoPatcherLib
                         (propPatch as ReplacePropertyAttribute).Apply(prop);
                     }
                 }
-                if (typeof(ILPatch).IsAssignableFrom(type))
+                if (canIlWeave && typeof(ILPatch).IsAssignableFrom(type))
                 {
                     (Activator.CreateInstance(type) as ILPatch).Replace();
                 }

@@ -1,13 +1,9 @@
 ﻿using MonoPatcherLib;
 using Sims3.Gameplay.CAS;
 using Sims3.Gameplay.Utilities;
-using Sims3.SimIFace;
-using Sims3.UI;
 using Sims3.UI.OnlineDating;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace SamplePatches
 {
@@ -49,36 +45,39 @@ namespace SamplePatches
         }
 
         // Same as the above patch, but using IL weaving. For more advanced users - harder and limited, but more compatible as multiple IL patches can be stacked together.
-        private void ILPatch_GetDefaultBodyType()
+        public class GetDefaultBodyTypeILPatch : ILPatch
         {
-            // Can only do IL weaving if the ASI is loaded.
-            if (MonoPatcher.InitializationType != MonoPatcher.InitializationTypes.CPP) return;
+            protected override MethodInfo TargetMethod
+            {
+                get
+                {
+                    return typeof(OnlineDatingProfile).GetMethod(nameof(OnlineDatingProfile.GetDefaultBodyType), BindingFlags.NonPublic | BindingFlags.Instance);
+                }
+            }
 
-            var GetDefaultBodyTypeMethod = typeof(OnlineDatingProfile).GetMethod(nameof(OnlineDatingProfile.GetDefaultBodyType), BindingFlags.NonPublic | BindingFlags.Instance);
+            protected override byte[] TargetFragment
+            {
+                get
+                {
+                    return new byte[]
+                    {
+                        // ldc.r4
+                        0x22,
+                        // 0f
+                        0x00, 0x00, 0x00, 0x00
+                    };
+                }
+            }
 
-            // Get the bytecode from the method
-            var il = MonoPatcher.GetIL(GetDefaultBodyTypeMethod);
-
-            // Look for the instruction that loads a 0.0 float
-
-            var search = new byte[5];
-            // ldc.r4
-            search[0] = 0x22;
-            // float 0
-            search[1] = 0x0;
-            search[1] = 0x0;
-            search[1] = 0x0;
-            search[1] = 0x0;
-
-            var weightLocation = Utility.FindInByteArray(il, search);
-
-            if (weightLocation == -1) return;
-
-            // Replace the 0.0 float with 0.5
-            Array.Copy(BitConverter.GetBytes(0.5f), 0, il, weightLocation + 1, 4);
-
-            // Patch the method
-            MonoPatcher.ReplaceIL(GetDefaultBodyTypeMethod, il);
+            protected override byte[] ReplacementFragment
+            {
+                get
+                {
+                    var il = TargetFragment;
+                    BitConverter.GetBytes(0.5f).CopyTo(il, 1);
+                    return il;
+                }
+            }
         }
     }
 }

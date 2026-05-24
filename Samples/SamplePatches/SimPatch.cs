@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MonoPatcherLib;
+﻿using MonoPatcherLib;
 using Sims3.Gameplay.Actors;
-using Sims3.Gameplay.Controllers;
 
 namespace SamplePatches
 {

@@ -4,7 +4,7 @@ using System.Reflection;
 namespace MonoPatcherLib
 {
     /// <summary>
-    /// This class can be implemented to replace parts of a method using IL weaving.
+    /// This class can be implemented to replace parts of a method body using IL weaving.
     /// </summary>
     /// <remarks>
     /// Having multiple IL replacements on the same method generally will not conflict, unless they both modify the same IL instructions.<br/>

@@ -97,7 +97,7 @@ namespace MonoPatcherLib
                         (propPatch as ReplacePropertyAttribute).Apply(prop);
                     }
                 }
-                if (canIlWeave && typeof(ILPatch).IsAssignableFrom(type))
+                if (canIlWeave && typeof(ILPatch).IsAssignableFrom(type) && !type.IsAbstract)
                 {
                     (Activator.CreateInstance(type) as ILPatch).Apply();
                 }
